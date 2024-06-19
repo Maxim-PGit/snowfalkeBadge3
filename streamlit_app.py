@@ -3,9 +3,8 @@ import streamlit as st
 from snowflake.snowpark.functions import col
 import requests
 
-#API Fruitvice
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
-fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
+
+
 
 #get DataFrame
 cnx = st.connection("snowflake")
@@ -29,8 +28,14 @@ st.write(name_on_order)
 if ingredients_list:    
   ingredients_string = ''
     
-  for fruit_choosen in ingredients_list:
-    ingredients_string += fruit_choosen + ' '
+  for fruit_choosen in ingredients_list:    
+      ingredients_string += fruit_choosen + ' '
+          #API Fruitvice
+      st.subheader(fruit_chosen + ' Nutrition Information')
+      fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
+      fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
+
+
 
   my_insert_stmt = """insert into smoothies.public.orders (order_id,ingredients,name_on_order,order_filled)
     values(order_id_seq.NEXTVAL,'""" + ingredients_string + "','" + name_on_order + "', False);"
@@ -45,5 +50,4 @@ if ingredients_list:
 
 
 
-fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
 
